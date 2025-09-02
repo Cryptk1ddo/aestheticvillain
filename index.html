@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TFF Method - The Apex Protocol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Chakra+Petch:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #8c34eb;
+            --color-secondary: #4f46e5;
+            --color-accent: #facc15; /* Yellow */
+            --color-bg-dark: #000000;
+            --color-bg-med: #050505;
+            --color-bg-light: #0a0a0a;
+        }
+        html { scroll-behavior: smooth; }
+        body { background-color: var(--color-bg-dark); color: #ffffff; font-family: 'Inter', sans-serif; padding-top: 50px; }
+        .font-display { font-family: 'Chakra Petch', sans-serif; }
+        
+        /* Effects & Animations */
+        .flash-sale-banner { background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)); animation: pulse-bg 3s infinite alternate; }
+        @keyframes pulse-bg { from { opacity: 0.9; } to { opacity: 1; } }
+        
+        .glitch { position: relative; color: white; animation: glitch-skew 1s infinite linear alternate-reverse; }
+        .glitch::before, .glitch::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--color-bg-dark); overflow: hidden; }
+        .glitch::before { left: 2px; text-shadow: -2px 0 var(--color-primary); clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%); animation: glitch-anim-1 3s infinite linear alternate-reverse; }
+        .glitch::after { left: -2px; text-shadow: -2px 0 #00f2ea, 2px 2px #ff00c1; clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%); animation: glitch-anim-2 2s infinite linear alternate-reverse; }
+        @keyframes glitch-anim-1 { 0%{clip-path:polygon(0 2%,100% 2%,100% 33%,0 33%)}25%{clip-path:polygon(0 40%,100% 40%,100% 45%,0 45%)}50%{clip-path:polygon(0 60%,100% 60%,100% 80%,0 80%)}75%{clip-path:polygon(0 15%,100% 15%,100% 25%,0 25%)}100%{clip-path:polygon(0 55%,100% 55%,100% 65%,0 65%)} }
+        @keyframes glitch-anim-2 { 0%{clip-path:polygon(0 67%,100% 67%,100% 73%,0 73%)}25%{clip-path:polygon(0 15%,100% 15%,100% 20%,0 20%)}50%{clip-path:polygon(0 90%,100% 90%,100% 80%,0 80%)}75%{clip-path:polygon(0 45%,100% 45%,100% 55%,0 55%)}100%{clip-path:polygon(0 22%,100% 22%,100% 32%,0 32%)} }
+        @keyframes glitch-skew { 0%{transform:skew(0deg)}10%{transform:skew(1deg)}20%{transform:skew(-1deg)}30%{transform:skew(2deg)}40%{transform:skew(0deg)}100%{transform:skew(0deg)} }
+        
+        .btn-primary { position: relative; border: 1px solid var(--color-primary); color: white; overflow: hidden; z-index: 1; transition: color 0.4s ease-in-out, transform 0.2s ease, box-shadow 0.3s ease; display: inline-block; }
+        .btn-primary:hover { transform: scale(1.05); color: #fff; box-shadow: 0 0 25px var(--color-primary); }
+        .btn-primary::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--color-primary); transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease-in-out; z-index: -1; }
+        .btn-primary:hover::before { transform: scaleX(1); }
+        
+        .reveal { opacity: 0; transform: translateY(50px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--color-bg-light); }
+        ::-webkit-scrollbar-thumb { background: var(--color-primary); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a855f7; }
+        
+        /* UI Components */
+        .testimonial-card { border: 1px solid #2a2a2a; backdrop-filter: blur(10px); background-color: rgba(10, 10, 10, 0.5); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .testimonial-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+        
+        .value-stack-item { border: 1px solid #333; transition: background-color 0.3s, border-color 0.3s; }
+        .value-stack-item:hover { background-color: #1a1024; border-color: var(--color-primary); }
+        
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+
+        .symptom-item { border: 2px solid #444; transition: all 0.3s ease; }
+        .symptom-item.selected { border-color: var(--color-accent); background-color: rgba(250, 204, 21, 0.1); color: var(--color-accent); }
+        .symptom-item.selected svg { transform: scale(1.2); }
+        
+        .section-divider { height: 2px; width: 100%; background: linear-gradient(90deg, transparent, var(--color-primary), transparent); opacity: 0.3; margin: 0 auto; }
+        .gradient-text { background: linear-gradient(90deg, #fff, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="flash-sale-banner" class="flash-sale-banner fixed top-0 left-0 right-0 h-[50px] z-50 flex items-center justify-center text-white font-bold px-4">
+        <div class="flex items-center space-x-4 text-center text-sm sm:text-base">
+            <span class="hidden sm:inline">⚡ FLASH SALE | LIMITED SPOTS ⚡</span><span class="sm:hidden">⚡ FLASH SALE ⚡</span><span>|</span>
+            <div class="flex items-center space-x-2">
+                <span>OFFER ENDS:</span>
+                <div id="countdown-timer" class="flex space-x-1 font-mono text-lg"><span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span></div>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="min-h-screen flex items-center justify-center text-center relative overflow-hidden px-4 pt-20 pb-10">
+            <div class="absolute inset-0 bg-black opacity-60 z-10"></div>
+            <div class="absolute inset-0 z-0"><div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(140,52,235,0.15),transparent_40%)]"></div></div>
+            <div class="relative z-20 flex flex-col items-center">
+                <div class="relative w-full overflow-hidden">
+                    <h1 class="text-4xl md:text-6xl lg:text-7xl font-black uppercase font-display glitch" data-text="UNLEASH YOUR APEX STATE">UNLEASH YOUR APEX STATE</h1>
+                </div>
+                <h2 class="font-display text-2xl md:text-3xl text-purple-400 uppercase tracking-widest mt-4">THE #1 TESTOSTERONE OPTIMIZATION PROTOCOL</h2>
+                <p class="mt-4 text-xl font-semibold text-yellow-400">PROVEN BY 400+ MEN IN 17 COUNTRIES</p>
+                <p class="max-w-3xl mx-auto mt-6 text-gray-300 text-lg md:text-xl leading-relaxed">Stop guessing with useless supplements and start building with a proven biological blueprint. This is your final answer to reclaiming your energy, focus, and physique.</p>
+                <a href="#offer" class="btn-primary mt-10 px-12 py-4 uppercase text-lg tracking-widest font-bold">START MY TRANSFORMATION</a>
+            </div>
+        </section>
+
+        <!-- As Seen On -->
+        <section class="py-8 bg-black reveal">
+            <div class="container mx-auto px-6">
+                <p class="text-center text-gray-500 uppercase tracking-widest text-sm">A METHOD TRUSTED BY HIGH-PERFORMERS</p>
+                <div class="flex justify-center items-center space-x-8 md:space-x-16 mt-4 opacity-40 grayscale">
+                    <span class="font-display text-2xl">ALPHA MINDSET</span>
+                    <span class="font-display text-2xl">THE VLLN</span>
+                    <span class="font-display text-2xl">MODERN MAN</span>
+                    <span class="font-display text-2xl">PEAK FITNESS</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Meet The Architect -->
+        <section class="py-20 md:py-24 bg-[#050505]">
+            <div class="container mx-auto px-6 max-w-5xl">
+                <div class="grid md:grid-cols-5 gap-8 md:gap-12 items-center">
+                    <div class="md:col-span-2 reveal">
+                        <div class="border-2 border-purple-500/30 p-2 rounded-lg">
+                             <img src="https://placehold.co/400x500/000000/ffffff?text=Creator" alt="Jaycen Knight" class="rounded-md w-full">
+                        </div>
+                    </div>
+                    <div class="md:col-span-3 reveal">
+                        <h2 class="font-display text-3xl md:text-4xl font-bold"><span class="gradient-text">MEET YOUR GUIDE TO APEX PERFORMANCE</span></h2>
+                        <h3 class="font-display text-2xl text-purple-400 mt-2">Jaycen Knight</h3>
+                        <p class="mt-4 text-gray-400">"After hitting a wall in my own thirties—brain fog, low drive, zero progress—I refused to accept it as my new normal. I spent 5 years and thousands of dollars on clinical research, self-experimentation, and consulting with endocrinologists to decode the male hormonal system.</p>
+                        <p class="mt-4 text-gray-400">The TFF Method isn't just theory; it's the exact blueprint I used to rebuild myself and hundreds of other men from the ground up. I'm not offering you a temporary fix. I'm giving you back the keys to your own biology."</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Symptom Identifier -->
+        <section class="py-20 md:py-24 bg-black">
+             <div class="container mx-auto px-6 max-w-5xl">
+                <h2 class="font-display text-center text-3xl md:text-4xl font-bold reveal"><span class="gradient-text">SELECT THE SYMPTOMS ROBBING YOUR POTENTIAL</span></h2>
+                <p class="text-center mt-4 text-gray-400 reveal">If one or more of these feel familiar, this protocol was engineered for you.</p>
+                <div id="symptom-checker" class="mt-12 grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 text-center">
+                    <div class="symptom-item p-6 rounded-lg cursor-pointer reveal">
+                        <svg class="w-10 h-10 mx-auto text-purple-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+                        <p class="font-bold mt-4">Constant Brain Fog</p>
+                    </div>
+                    <div class="symptom-item p-6 rounded-lg cursor-pointer reveal">
+                        <svg class="w-10 h-10 mx-auto text-purple-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547a2 2 0 00-.547 1.806l.477 2.387a6 6 0 00.517 3.86l.158.318a6 6 0 00.517 3.86l2.387.477a2 2 0 001.806-.547a2 2 0 00.547-1.806l-.477-2.387a6 6 0 00-.517-3.86l-.158-.318a6 6 0 00-.517-3.86l-2.387-.477zM11.428 11.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L.05 11.21a2 2 0 00-1.806.547a2 2 0 00-.547 1.806l.477 2.387a6 6 0 00.517 3.86l.158.318a6 6 0 00.517 3.86l2.387.477a2 2 0 001.806-.547a2 2 0 00.547-1.806l-.477-2.387a6 6 0 00-.517-3.86l-.158-.318a6 6 0 00-.517-3.86l-2.387-.477z"></path></svg>
+                        <p class="font-bold mt-4">Low Energy / Fatigue</p>
+                    </div>
+                    <div class="symptom-item p-6 rounded-lg cursor-pointer reveal">
+                         <svg class="w-10 h-10 mx-auto text-purple-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                        <p class="font-bold mt-4">Poor Gym Results</p>
+                    </div>
+                    <div class="symptom-item p-6 rounded-lg cursor-pointer reveal">
+                        <svg class="w-10 h-10 mx-auto text-purple-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        <p class="font-bold mt-4">Lack of Drive</p>
+                    </div>
+                </div>
+                <div id="symptom-result" class="text-center mt-8 text-yellow-400 font-bold text-lg h-8 transition-opacity duration-500 opacity-0"></div>
+             </div>
+        </section>
+        
+        <!-- The Two Futures -->
+        <section class="py-20 md:py-24 bg-black">
+            <div class="container mx-auto px-6 max-w-5xl text-center">
+                <h2 class="font-display text-3xl md:text-4xl font-bold reveal">YOU ARE AT A CROSSROADS. CHOOSE YOUR PATH.</h2>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="border-2 border-red-500/50 rounded-lg p-8 reveal">
+                        <h3 class="font-display text-2xl font-bold text-red-400">PATH 1: THE SLOW DECLINE</h3>
+                        <p class="mt-4 text-gray-400">Continue down the same road. Keep guessing, trying fad supplements, and accepting this depleted state as 'normal.' Watch your energy, focus, and physique slowly erode over time, becoming a ghost of the man you could have been.</p>
+                    </div>
+                    <div class="border-2 border-purple-500/50 rounded-lg p-8 reveal">
+                        <h3 class="font-display text-2xl font-bold text-purple-400">PATH 2: THE APEX ASCENSION</h3>
+                        <p class="mt-4 text-gray-400">Take control. Arm yourself with a proven, step-by-step protocol. Re-engineer your biology from the ground up and build a body and mind that operates at maximum capacity. Become the man you were meant to be: focused, energetic, and formidable.</p>
+                    </div>
+                </div>
+                 <p class="mt-12 text-xl reveal">The TFF Method is your map for Path 2. Here's how we'll get you there...</p>
+            </div>
+        </section>
+
+        <!-- Video Testimonial -->
+        <section class="py-20 md:py-24 bg-[#050505]">
+            <div class="container mx-auto px-6 text-center">
+                <div class="max-w-4xl mx-auto reveal">
+                     <h2 class="font-display text-3xl md:text-4xl font-bold">"I have more energy now than I did at 30."</h2>
+                     <p class="mt-4 text-gray-400">Hear from David L., a 42-year-old entrepreneur and father, on how the TFF method transformed his daily life.</p>
+                     <div class="mt-8 rounded-lg overflow-hidden relative cursor-pointer group">
+                        <img src="https://placehold.co/1200x675/000000/ffffff?text=Video+Testimonial" alt="Video Testimonial" class="w-full">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all duration-300"></div>
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                            <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform duration-300">
+                                <svg class="w-10 h-10 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+                            </div>
+                        </div>
+                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Text Testimonials -->
+        <section class="py-20 md:py-24 bg-black">
+            <div class="container mx-auto px-6">
+                 <h2 class="font-display text-center text-3xl md:text-4xl font-bold reveal"><span class="gradient-text">HEAR FROM THE MEN WHO RECLAIMED THEIR EDGE</span></h2>
+                 <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                     <div class="testimonial-card p-8 rounded-lg reveal">
+                        <p class="text-gray-300">"Week 3 and it's like a light switch flipped. The brain fog is gone. I'm focused at work and actually have the energy to hit the gym after. This isn't just a program, it's a new OS for my body."</p>
+                        <div class="mt-6 flex items-center">
+                            <img src="https://placehold.co/100x100/1a1a1a/8c34eb?text=MK" class="w-12 h-12 rounded-full border-2 border-purple-500/50" alt="Avatar">
+                            <div class="ml-4">
+                                <p class="font-bold">Michael K.</p>
+                                <p class="text-sm text-gray-500">Software Engineer, 38</p>
+                            </div>
+                        </div>
+                     </div>
+                     <div class="testimonial-card p-8 rounded-lg reveal">
+                        <p class="text-gray-300">"I was skeptical. I'd tried every supplement under the sun. The difference here is the system. It's a complete, holistic approach that actually works. My lifts are up, my mood is stable, and my wife is happy."</p>
+                        <div class="mt-6 flex items-center">
+                            <img src="https://placehold.co/100x100/1a1a1a/8c34eb?text=RB" class="w-12 h-12 rounded-full border-2 border-purple-500/50" alt="Avatar">
+                            <div class="ml-4">
+                                <p class="font-bold">Robert B.</p>
+                                <p class="text-sm text-gray-500">Contractor, 45</p>
+                            </div>
+                        </div>
+                     </div>
+                     <div class="testimonial-card p-8 rounded-lg reveal">
+                        <p class="text-gray-300">"The nutrition module alone was worth the price. No crazy diets, just smart principles that are easy to follow. I've dropped 15lbs of fat and feel more powerful than I have in years. Don't hesitate."</p>
+                        <div class="mt-6 flex items-center">
+                            <img src="https://placehold.co/100x100/1a1a1a/8c34eb?text=DS" class="w-12 h-12 rounded-full border-2 border-purple-500/50" alt="Avatar">
+                            <div class="ml-4">
+                                <p class="font-bold">David S.</p>
+                                <p class="text-sm text-gray-500">Sales Executive, 34</p>
+                            </div>
+                        </div>
+                     </div>
+                 </div>
+            </div>
+        </section>
+        
+        <!-- Value Stacking Section -->
+        <section id="offer" class="py-20 md:py-32 bg-[#050505]">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12 md:mb-20 reveal">
+                    <h2 class="font-display uppercase text-4xl md:text-5xl font-bold tracking-wider">YOUR DECLASSIFIED ARSENAL</h2>
+                    <p class="max-w-2xl mx-auto mt-4 text-gray-400">Here is the complete system you'll get instant access to:</p>
+                </div>
+                <!-- All the value stack items from previous version -->
+                <div class="max-w-4xl mx-auto space-y-4 reveal">
+                    <div class="value-stack-item p-6 rounded-lg"><div class="flex flex-col sm:flex-row justify-between items-start sm:items-center"><h3 class="text-xl font-bold">Module 1: Anabolic Nutrition Code</h3><span class="text-lg font-semibold text-purple-400 mt-2 sm:mt-0 flex-shrink-0">Value: €297</span></div><p class="mt-2 text-gray-400">Turn food into high-octane fuel for T production without restrictive diets.</p></div>
+                    <div class="value-stack-item p-6 rounded-lg"><div class="flex flex-col sm:flex-row justify-between items-start sm:items-center"><h3 class="text-xl font-bold">Module 2: The VLLN Strength Matrix</h3><span class="text-lg font-semibold text-purple-400 mt-2 sm:mt-0 flex-shrink-0">Value: €247</span></div><p class="mt-2 text-gray-400">Trigger a powerful hormonal response with training protocols for any gym setup.</p></div>
+                    <div class="value-stack-item p-6 rounded-lg"><div class="flex flex-col sm:flex-row justify-between items-start sm:items-center"><h3 class="text-xl font-bold">Module 3: The Deep Sleep Protocol</h3><span class="text-lg font-semibold text-purple-400 mt-2 sm:mt-0 flex-shrink-0">Value: €197</span></div><p class="mt-2 text-gray-400">Master your sleep to maximize recovery, energy, and hormone production.</p></div>
+                    <div class="value-stack-item p-6 rounded-lg bg-purple-900/20 border-purple-700"><div class="flex flex-col sm:flex-row justify-between items-start sm:items-center"><h3 class="text-xl font-bold"><span class="text-yellow-400">[BONUS]</span> The Inner Circle</h3><span class="text-lg font-semibold text-purple-400 mt-2 sm:mt-0 flex-shrink-0">Value: €497</span></div><p class="mt-2 text-gray-400">Direct access to me and a private community. <span class="font-bold text-yellow-500">Limited spots.</span></p></div>
+                    <div class="value-stack-item p-6 rounded-lg bg-purple-900/20 border-purple-700"><div class="flex flex-col sm:flex-row justify-between items-start sm:items-center"><h3 class="text-xl font-bold"><span class="text-yellow-400">[BONUS]</span> Protocol Evolution</h3><span class="text-lg font-semibold text-purple-400 mt-2 sm:mt-0 flex-shrink-0">Priceless</span></div><p class="mt-2 text-gray-400">Get every future update to the system for free, for life.</p></div>
+                </div>
+
+                <div class="text-center mt-20 reveal">
+                    <div class="border-2 border-purple-500 rounded-lg p-6 md:p-10 max-w-3xl mx-auto bg-[#0a0512] shadow-2xl shadow-purple-500/20">
+                        <p class="text-2xl font-bold">Total Value: <span class="text-gray-500">€1,238 + Bonuses</span></p>
+                        <p class="font-display text-2xl md:text-3xl font-bold mt-4">Regular Price: <span class="line-through text-red-500/70">€197</span></p>
+                        <p class="font-display text-3xl md:text-5xl font-bold mt-2 text-yellow-400">⚡ YOUR FLASH SALE PRICE ⚡</p>
+                        <div class="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 my-4">
+                            <p class="text-7xl md:text-8xl font-black text-purple-400">€97</p>
+                            <div class="bg-yellow-400 text-black font-bold rounded-md px-4 py-2 text-xl -rotate-6 transform">
+                                SAVE 51%
+                            </div>
+                        </div>
+                        <p class="text-gray-400 -mt-4 mb-8">Price returns to €197 when timer hits zero.</p>
+                        <a href="#" class="btn-primary mt-6 px-16 py-5 uppercase text-xl tracking-widest font-bold w-full md:w-auto animate-pulse">START MY TRANSFORMATION</a>
+                         <div class="mt-8 flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-gray-400">
+                            <div class="flex items-center space-x-2"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" /></svg><span>Secure SSL Checkout</span></div>
+                            <div class="flex items-center space-x-2"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path d="M7 2L13 10L9 10L11 18L5 10L9 10L7 2z" /></svg><span>Instant Access</span></div>
+                        </div>
+                        <div class="mt-8 bg-black/30 border-t-2 border-b-2 border-yellow-500/50 py-6">
+                            <div class="flex items-center justify-center">
+                                <svg class="w-8 h-8 text-yellow-400 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 1.944c-3.138 0-5.99 1.28-8.034 3.372A.954.954 0 002.5 6.044v2.754a.954.954 0 00.453.81l1.85 1.229a.954.954 0 010 1.62l-1.85 1.229a.954.954 0 00-.453.81v2.754c0 .413.26.77.666.907C4.01 16.776 6.862 18.056 10 18.056c3.138 0 5.99-1.28 8.034-3.372a.954.954 0 00.666-.907v-2.754a.954.954 0 00-.453-.81l-1.85-1.229a.954.954 0 010-1.62l1.85-1.229a.954.954 0 00.453-.81V6.044a.954.954 0 00-.5-.954C15.99 3.224 13.138 1.944 10 1.944zM8.94 13l-2.47-2.47a.75.75 0 011.06-1.06L9 10.88l3.47-3.47a.75.75 0 011.06 1.06L8.94 13z" clip-rule="evenodd" /></svg>
+                                <h3 class="font-bold text-xl text-yellow-400 uppercase tracking-wider">The Apex Transformation Guarantee</h3>
+                            </div>
+                             <p class="mt-2 text-gray-300 text-sm max-w-xl mx-auto">Follow the protocol for 30 days. If you don't feel a significant, undeniable shift in your energy, focus, and drive, I will personally refund your entire investment. No questions asked. The risk is entirely on me.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="py-20 md:py-24 bg-black">
+            <div class="container mx-auto px-6 max-w-3xl">
+                <h2 class="font-display text-center text-3xl md:text-4xl font-bold reveal">FREQUENTLY ASKED QUESTIONS</h2>
+                <div class="mt-12 space-y-4 reveal">
+                    <details class="bg-[#0a0a0a] border border-gray-800 rounded-lg p-6 cursor-pointer">
+                        <summary class="font-bold text-lg flex justify-between items-center">Is this just for hardcore bodybuilders?<span class="text-purple-400 text-2xl font-bold">+</span></summary>
+                        <p class="mt-4 text-gray-400">Not at all. This is for any man—entrepreneur, father, professional—who wants to operate at their highest potential. The training module is adaptable to any experience level, from beginner to advanced athlete.</p>
+                    </details>
+                    <details class="bg-[#0a0a0a] border border-gray-800 rounded-lg p-6 cursor-pointer">
+                        <summary class="font-bold text-lg flex justify-between items-center">How long until I see results?<span class="text-purple-400 text-2xl font-bold">+</span></summary>
+                        <p class="mt-4 text-gray-400">While everyone's biology is different, most men report feeling a noticeable increase in energy and focus within the first 7-10 days. Significant physical changes are typically observed within 3-4 weeks of consistent application.</p>
+                    </details>
+                    <details class="bg-[#0a0a0a] border border-gray-800 rounded-lg p-6 cursor-pointer">
+                        <summary class="font-bold text-lg flex justify-between items-center">Do I need to buy expensive supplements?<span class="text-purple-400 text-2xl font-bold">+</span></summary>
+                        <p class="mt-4 text-gray-400">No. The core of this protocol is built on nutrition, training, and lifestyle adjustments. We do recommend a few basic, cost-effective supplements (like Vitamin D and Zinc), but these are optional and not a requirement for success.</p>
+                    </details>
+                    <details class="bg-[#0a0a0a] border border-gray-800 rounded-lg p-6 cursor-pointer">
+                        <summary class="font-bold text-lg flex justify-between items-center">Is this a one-time payment?<span class="text-purple-400 text-2xl font-bold">+</span></summary>
+                        <p class="mt-4 text-gray-400">Yes. You pay once and get lifetime access to the entire protocol, the private community, and all future updates. There are no hidden fees or recurring subscriptions.</p>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    <footer class="bg-black py-12"><div class="container mx-auto px-6 text-center text-gray-400"><p class="text-sm">&copy; 2024 Aesthetic Villain. All Rights Reserved.</p><p class="text-xs mt-2">Stop accepting decline. Start building dominance.</p></div></footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Countdown Timer
+            const hoursEl = document.getElementById('hours'), minutesEl = document.getElementById('minutes'), secondsEl = document.getElementById('seconds');
+            const saleEndTime = new Date().getTime() + 24 * 60 * 60 * 1000;
+            function updateCountdown() {
+                const now = new Date().getTime(), distance = saleEndTime - now;
+                if (distance < 0) { clearInterval(timerInterval); document.getElementById('flash-sale-banner').innerHTML = '<span class="text-lg">⚡ SALE HAS ENDED ⚡</span>'; return; }
+                const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)), m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)), s = Math.floor((distance % (1000 * 60)) / 1000);
+                hoursEl.textContent = h.toString().padStart(2, '0'); minutesEl.textContent = m.toString().padStart(2, '0'); secondsEl.textContent = s.toString().padStart(2, '0');
+            }
+            const timerInterval = setInterval(updateCountdown, 1000); updateCountdown();
+
+            // Scroll Reveal
+            const revealElements = document.querySelectorAll('.reveal');
+            const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }); }, { threshold: 0.1 });
+            revealElements.forEach(elem => observer.observe(elem));
+
+            // Symptom Checker
+            const symptomItems = document.querySelectorAll('.symptom-item');
+            const symptomResult = document.getElementById('symptom-result');
+            symptomItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    item.classList.toggle('selected');
+                    const selectedCount = document.querySelectorAll('.symptom-item.selected').length;
+                    if (selectedCount > 0) {
+                        symptomResult.textContent = `The TFF Method is designed to eliminate these ${selectedCount} roadblock${selectedCount > 1 ? 's' : ''}.`;
+                        symptomResult.classList.remove('opacity-0');
+                    } else {
+                        symptomResult.classList.add('opacity-0');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
